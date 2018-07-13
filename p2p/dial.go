@@ -22,8 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strconv"
-	"strings"
 	"time"
 
 	// SCION
@@ -356,32 +354,36 @@ type dialError struct {
 // dial performs the actual connection attempt.
 // SCION
 // TODO
-// TODO
 func (t *dialTask) dial(srv *Server, dest *discover.Node) error {
 	fmt.Println("dial() dial.go")
-	// TODO SCION
-	// TODO
-	// dest != nil ???
 
 	// SCION
 	if srv.SCIONListenAddr != "" && dest.SCIONAddr() != "" {
 		fmt.Println("SCION DIAL")
 
 		// Local address
-		localStr := strings.Split(srv.SCIONAddr, ":")
-		fmt.Println("Local: " + localStr[0] + ":0")
-		local, err := snet.AddrFromString(localStr[0] + ":0")
+		// localStr := strings.Split(srv.SCIONAddr, ":")
+		// fmt.Println("Local: " + localStr[0] + ":0")
+		// local, err := snet.AddrFromString(localStr[0] + ":0")
+		local, err := snet.AddrFromString(srv.SCIONAddr)
+		local.L4Port = uint16(0)
 		if err != nil {
 			fmt.Println(err)
+		} else {
+			fmt.Println("Local:", local)
 		}
 
 		// Remote address
-		remoteStr := strings.Split(dest.SCIONAddr(), ":")
-		port, err := strconv.Atoi(remoteStr[1])
-		fmt.Println("Remote: " + remoteStr[0] + ":" + strconv.Itoa(port+1))
-		remote, err := snet.AddrFromString(remoteStr[0] + ":" + strconv.Itoa(port+1))
+		// remoteStr := strings.Split(dest.SCIONAddr(), ":")
+		// port, err := strconv.Atoi(remoteStr[1])
+		// fmt.Println("Remote: " + remoteStr[0] + ":" + strconv.Itoa(port+1))
+		// remote, err := snet.AddrFromString(remoteStr[0] + ":" + strconv.Itoa(port+1))
+		remote, err := snet.AddrFromString(dest.SCIONAddr())
+		remote.L4Port++
 		if err != nil {
 			fmt.Println(err)
+		} else {
+			fmt.Println("Remote:", remote)
 		}
 
 		// Dial SCION

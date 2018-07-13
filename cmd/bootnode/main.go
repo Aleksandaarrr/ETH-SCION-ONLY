@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -124,7 +123,7 @@ func main() {
 		if err != nil {
 			utils.Fatalf("Scion address needs to be specified with -scion: %v", err)
 		} else {
-			sciondAddr := "/run/shm/sciond/sd" + strconv.Itoa(int(scionAddr.IA.I)) + "-" + strconv.Itoa(int(scionAddr.IA.A)) + ".sock"
+			sciondAddr := "/run/shm/sciond/default.sock"
 			dispatcherAddr := "/run/shm/dispatcher/default.sock"
 			snet.Init(scionAddr.IA, sciondAddr, dispatcherAddr)
 

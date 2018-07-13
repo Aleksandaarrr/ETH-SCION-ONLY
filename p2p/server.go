@@ -22,8 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -498,7 +496,7 @@ func (srv *Server) Start() (err error) {
 			if err != nil {
 				srv.log.Error("Scion address needs to be specified with -scion: %v", err)
 			} else {
-				sciondAddr := "/run/shm/sciond/sd" + strconv.Itoa(int(scionAddr.IA.I)) + "-" + strconv.Itoa(int(scionAddr.IA.A)) + ".sock"
+				sciondAddr := "/run/shm/sciond/default.sock"
 				dispatcherAddr := "/run/shm/dispatcher/default.sock"
 				snet.Init(scionAddr.IA, sciondAddr, dispatcherAddr)
 
@@ -617,13 +615,17 @@ func (srv *Server) startListeningSCION() error {
 
 	// Configure local address
 	// TODO CHANGE LATER
-	s := strings.Split(srv.SCIONAddr, ":")
-	n, _ := strconv.Atoi(s[1])
-	local, err := snet.AddrFromString(s[0] + ":" + strconv.Itoa(n+1))
-	fmt.Println(s[0] + ":" + strconv.Itoa(n+1))
+	// s := strings.Split(srv.SCIONAddr, ":")
+	// n, _ := strconv.Atoi(s[1])
+	// local, err := snet.AddrFromString(s[0] + ":" + strconv.Itoa(n+1))
+	// fmt.Println(s[0] + ":" + strconv.Itoa(n+1))
+	local, err := snet.AddrFromString(srv.SCIONAddr)
+	local.L4Port++
 	if err != nil {
 		fmt.Println(err)
 		return err
+	} else {
+		fmt.Println(local)
 	}
 
 	err = squic.Init("", "")

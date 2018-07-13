@@ -149,6 +149,9 @@ func (t *rlpx) close(err error) {
 	if t.sq.Stream != nil {
 		fmt.Println("close SCION")
 		t.sq.Close()
+		if t.fd != nil {
+			t.fd.Close()
+		}
 	} else {
 		fmt.Println("close Inet")
 		t.fd.Close()
@@ -162,9 +165,6 @@ func (t *rlpx) doProtoHandshake(our *protoHandshake) (their *protoHandshake, err
 	// disconnects us early with a valid reason, we should return it
 	// as the error so it can be tracked elsewhere.
 	werr := make(chan error, 1)
-	// TODO SCION
-	// TODO
-	// TODO
 	go func() { werr <- Send(t.rw, handshakeMsg, our) }()
 	if their, err = readProtocolHandshake(t.rw, our); err != nil {
 		<-werr // make sure the write terminates too
